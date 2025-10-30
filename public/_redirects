@@ -1,0 +1,4 @@
+# SPA fallback (permite también cambiar a BrowserRouter en el futuro)
+# Cualquier ruta desconocida responde con index.html (status 200)
+# Si ya usas HashRouter, no molesta; sólo garantiza refresh profundo.
+ /*    /index.html   200

@@ -1,0 +1,52 @@
+# ============================================
+# Node / Vite / React standard ignores
+# ============================================
+node_modules
+dist
+.DS_Store
+.env
+.env.*
+!.env.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ============================================
+# Editor / IDE
+# ============================================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.iml
+
+# ============================================
+# System files
+# ============================================
+Thumbs.db
+Desktop.ini
+
+# ============================================
+# Build / Cache
+# ============================================
+.cache/
+.vite/
+coverage/
+*.local
+
+# ============================================
+# OS / Cloudflare Pages temp
+# ============================================
+.vercel
+.cloudflare
+functions/.dev.vars
+
+# ============================================
+# Mac / Windows extra
+# ============================================
+ehthumbs.db
+Icon?

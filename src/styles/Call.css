@@ -1,0 +1,58 @@
+.call-page {
+  padding: 72px 24px;
+  display: grid;
+  gap: 96px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.call-block {
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 48px 32px;
+}
+
+.call-block h1 {
+  font-family: "Russo One", sans-serif;
+  color: var(--accent);
+  margin-top: 0;
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+}
+
+.call-block h2 {
+  font-family: "Russo One", sans-serif;
+  margin-top: 1.5rem;
+  color: var(--copper);
+  font-size: 1.2rem;
+}
+
+.call-block ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--text-2);
+}
+
+.call-intro {
+  color: var(--text-2);
+  margin-bottom: 1rem;
+}
+
+blockquote {
+  margin-top: 2rem;
+  padding-left: 1rem;
+  border-left: 3px solid var(--accent);
+  color: var(--text-2);
+  font-style: italic;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
