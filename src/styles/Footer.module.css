@@ -1,0 +1,104 @@
+/* Barra inferior estilo landing, siempre al fondo cuando se termina el contenido */
+.wrap {
+  padding: 2.5rem 0 2rem;
+  background: radial-gradient(
+    ellipse at bottom,
+    rgba(196, 110, 61, 0.12),
+    #050505
+  );
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+/* --- Redes sociales con íconos --- */
+.social {
+  display: flex;
+  gap: 1.75rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.iconLink {
+  color: var(--color-text-muted);
+  transition: color 0.25s ease, transform 0.2s ease;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  stroke-width: 1.6;
+}
+
+.iconLink:hover {
+  color: var(--color-accent);
+  transform: translateY(-2px);
+}
+/* Lista de redes (IG TT YT IN en el landing) */
+.social {
+  display: flex;
+  gap: 2.25rem;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+/* Links de redes */
+.a {
+  text-decoration: none;
+  color: var(--color-text-muted);
+  font-weight: 300;
+  transition: color var(--transition-fast);
+}
+
+.a:hover {
+  color: var(--color-accent);
+}
+
+/* Mail centrado en violeta */
+.mail {
+  text-decoration: none;
+  color: var(--color-accent);
+  font-size: 0.9rem;
+}
+
+/* Copyright */
+.copy {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+/* legal */
+
+.legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.legalLink {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-decoration: none;
+  color: var(--color-text-muted);
+  transition: color 0.2s ease;
+}
+
+.legalLink:hover {
+  color: var(--color-accent);
+}
+/* Responsive ligero */
+@media (max-width: 640px) {
+  .social {
+    gap: 1.5rem;
+    font-size: 0.8rem;
+  }
+}

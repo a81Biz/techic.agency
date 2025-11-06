@@ -1,0 +1,13 @@
+{
+  "id": "services",
+  "type": "collection",
+  "basePath": "/services",
+  "listTitle": "Servicios",
+  "pageTitle": "Servicios — TECHIC",
+  "pageSubtitle": "Estrategia, dirección visual y producción de contenido.",
+  "itemLabel": "Servicio",
+  "enabled": true,
+  "showOnHome": true,
+  "homeLimit": 2,
+  "place": 1
+}

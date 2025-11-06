@@ -1,13 +1,41 @@
-:root {
-  --bg: #0F0F0F;
-  --bg-2: #1A1A1A;
-  --line: #2F2F2F;
-  --text: #FFFFFF;
-  --text-2: #BDBDBD;
-  --accent: #9B59B6;
-  --copper: #C46E3D;
+/* src/styles/variables.css */
 
-  --radius: 12px;
-  --shadow: 0 10px 40px rgba(0,0,0,.35);
-  --maxw: 1100px;
+/* 1. Fuentes: movemos Google Fonts aquí */
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@300;400;600&display=swap');
+
+/* 2. Design tokens base */
+:root {
+  /* Colores principales (desde techic-landing / contents) */
+  --color-bg: #0F0F0F;
+  --color-bg-elevated: #151515;
+  --color-surface: rgba(255, 255, 255, 0.02);
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+
+  --color-text: #FFFFFF;
+  --color-text-muted: #B3B3B3;
+
+  --color-accent: #9B59B6;
+  --color-accent-soft: rgba(155, 89, 182, 0.12);
+  --color-complement: #C46E3D;
+
+  /* Tipografía */
+  --font-heading: 'Russo One', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Radios y sombras */
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-sm: 10px;
+
+  --shadow-soft: 0 24px 60px rgba(0, 0, 0, 0.6);
+
+  /* Layout */
+  --layout-max-width: 1120px;
+  --layout-gutter: 1.5rem;
+
+  /* Transiciones */
+  --transition-fast: 150ms ease-out;
+  --transition-med: 220ms ease-out;
+   
+  --header-height: 64px;
 }

@@ -1,0 +1,13 @@
+{
+  "id": "blog",
+  "type": "collection",
+  "basePath": "/blog",
+  "listTitle": "Blog",
+  "pageTitle": "Recursos y Estrategia — TECHIC",
+  "pageSubtitle": "Artículos sobre creación de contenido, dirección visual y atracción de talento.",
+  "itemLabel": "Artículo",
+  "enabled": true,
+  "showOnHome": true,
+  "homeLimit": 3,
+  "place": 5
+}

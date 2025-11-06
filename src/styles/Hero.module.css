@@ -1,0 +1,55 @@
+.wrap {
+  position: relative;
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem var(--layout-gutter);
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--color-text);
+  overflow: hidden;
+}
+.hero {
+  min-height: calc(100vh - var(--header-height));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(155, 89, 182, 0.25), transparent 55%),
+    radial-gradient(circle at bottom right, rgba(196, 110, 61, 0.22), transparent 55%),
+    #050505;
+}
+.h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+.p {
+  font-size: 0.98rem;
+  color: var(--color-text-muted);
+  max-width: 520px;
+  margin: 0 auto 1.8rem;
+}
+
+/* CTA dentro del hero, hereda estilos .btn pero puede tener ajustes */
+.cta {
+  margin-top: 0.6rem;
+}
+
+/* Animación opcional fade-in si usas esa clase global */
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 1.2s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "legal",
+  "type": "collection",
+  "basePath": "/legal",
+  "listTitle": "Legales",
+  "pageTitle": "Legales — TECHIC",
+  "pageSubtitle": "Términos, políticas y avisos que garantizan transparencia y protección de datos.",
+  "itemLabel": "Documento",
+  "enabled": true,
+  "showOnHome": false,
+  "homeLimit": 0,
+  "place": 6
+}

@@ -1,45 +1,74 @@
-import { useEffect } from "react";
-import { setCanonical, setJsonLd, upsertMeta } from "../lib/head";
+// src/components/SEO.tsx
+import { useEffect } from 'react'
+import type { SEOConfig } from '../models/seo.model'
 
-type Props = {
-  title?: string;
-  description?: string;
-  image?: string;
-  url?: string;
-  canonical?: string;
-  noindex?: boolean;
-  jsonLd?: object;
-};
+// Alias simple para las props (podrías usar SEOConfig directamente)
+type SEOProps = SEOConfig
 
 export default function SEO({
-  title = "TECHIC — Where skill becomes art",
-  description = "Producción creativa y dirección visual para marcas, artistas y creadores.",
-  image,
-  url,
+  title,
+  description,
   canonical,
-  noindex,
-  jsonLd
-}: Props) {
+  image,
+  noIndex,
+}: SEOProps) {
   useEffect(() => {
-    if (title) document.title = title;
 
-    if (description) upsertMeta("name", "description", description);
-    if (noindex) upsertMeta("name", "robots", "noindex,nofollow");
+    if (title) {
+      document.title = title
+    }
 
-    if (title) upsertMeta("property", "og:title", title);
-    if (description) upsertMeta("property", "og:description", description);
-    upsertMeta("property", "og:type", "website");
-    if (url) upsertMeta("property", "og:url", url);
-    if (image) upsertMeta("property", "og:image", image);
+    const setMeta = (name: string, content?: string) => {
+      if (!content) return
+      let el = document.querySelector<HTMLMetaElement>(
+        `meta[name="${name}"]`
+      )
+      if (!el) {
+        el = document.createElement('meta')
+        el.name = name
+        document.head.appendChild(el)
+      }
+      el.content = content
+    }
 
-    upsertMeta("name", "twitter:card", "summary_large_image");
-    if (title) upsertMeta("name", "twitter:title", title);
-    if (description) upsertMeta("name", "twitter:description", description);
-    if (image) upsertMeta("name", "twitter:image", image);
+    const setProperty = (property: string, content?: string) => {
+      if (!content) return
+      let el = document.querySelector<HTMLMetaElement>(
+        `meta[property="${property}"]`
+      )
+      if (!el) {
+        el = document.createElement('meta')
+        el.setAttribute('property', property)
+        document.head.appendChild(el)
+      }
+      el.content = content
+    }
 
-    if (canonical) setCanonical(canonical);
-    if (jsonLd) setJsonLd(jsonLd);
-  }, [title, description, image, url, canonical, noindex, jsonLd]);
+    // básicos
+    setMeta('description', description)
 
-  return null;
+    if (noIndex) {
+      setMeta('robots', 'noindex,nofollow')
+    }
+
+    // Open Graph
+    setProperty('og:title', title)
+    setProperty('og:description', description)
+    if (image) setProperty('og:image', image)
+
+    // canonical
+    if (canonical) {
+      let link = document.querySelector<HTMLLinkElement>(
+        'link[rel="canonical"]'
+      )
+      if (!link) {
+        link = document.createElement('link')
+        link.rel = 'canonical'
+        document.head.appendChild(link)
+      }
+      link.href = canonical
+    }
+  }, [title, description, canonical, image, noIndex])
+
+  return null
 }

@@ -1,0 +1,13 @@
+{
+  "id": "about",
+  "type": "collection",
+  "basePath": "/about",
+  "listTitle": "Nosotros",
+  "pageTitle": "Nosotros — TECHIC",
+  "pageSubtitle": "Dirección creativa, producción y estrategia detrás de cada proyecto.",
+  "itemLabel": "Equipo",
+  "enabled": true,
+  "showOnHome": true,
+  "homeLimit": 1,
+  "place": 4
+}

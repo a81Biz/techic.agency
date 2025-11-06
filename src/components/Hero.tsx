@@ -1,4 +1,4 @@
-import s from './Hero.module.css'
+import s from '../styles/Hero.module.css'
 import { Link } from 'react-router-dom'
 
 export default function Hero() {
@@ -7,7 +7,7 @@ export default function Hero() {
       <div>
         <h1 id="hero-title" className={s.h1}>Where skill becomes art.</h1>
         <p className={s.p}>Producción creativa y dirección visual para marcas, artistas y creadores.</p>
-        <Link to="/call" className={s.cta} aria-label="Ir a convocatorias">Trabaja con nosotros</Link>
+        <Link to="/calls" className={`${s.cta} btn btn-primary`} aria-label="Ir a convocatorias">Trabaja con nosotros</Link>
       </div>
     </section>
   )

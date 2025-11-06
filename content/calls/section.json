@@ -1,0 +1,13 @@
+{
+  "id": "calls",
+  "type": "collection",
+  "basePath": "/calls",
+  "listTitle": "Convocatorias",
+  "pageTitle": "Convocatorias — TECHIC",
+  "pageSubtitle": "Participa en los proyectos creativos y editoriales de TECHIC.",
+  "itemLabel": "Convocatoria",
+  "enabled": true,
+  "showOnHome": true,
+  "homeLimit": 2,
+  "place": 7
+}

@@ -1,0 +1,13 @@
+{
+  "id": "work",
+  "type": "collection",
+  "basePath": "/work",
+  "listTitle": "Casos de éxito",
+  "pageTitle": "Casos de éxito — TECHIC",
+  "pageSubtitle": "Proyectos donde la estrategia, la producción y el talento se alinean a resultados medibles.",
+  "itemLabel": "Proyecto",
+  "enabled": true,
+  "showOnHome": true,
+  "homeLimit": 3,
+  "place": 2
+}

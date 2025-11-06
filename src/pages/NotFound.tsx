@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom'
 import SEO from '../components/SEO'
 
 export default function NotFound() {
-  const url = window.location.href
+  
   return (
     <>
-      <SEO title="404 — TECHIC" noindex url={url} />
+      <SEO title="404 — TECHIC" noIndex/>
       <main style={{display:'grid',placeItems:'center', minHeight:'60vh', padding:'24px'}} className="fade-in">
         <div style={{textAlign:'center'}}>
           <h1>404 — Página no encontrada</h1>

@@ -1,0 +1,10 @@
+{
+  "type": "single",
+  "basePath": "/contact",
+  "listTitle": "Contactx",
+  "pageTitle": "Contacto — TECHIC",
+  "pageSubtitle": "Cuéntanos sobre tu marca, objetivos y tiempos. Te responderemos muy pronto.",
+  "itemLabel": "Página",
+  "enabled": true,
+  "showOnHome": false
+}

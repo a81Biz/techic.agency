@@ -1,6 +1,0 @@
-.wrap { padding: 48px 24px; border-top: 1px solid rgba(255,255,255,.06); text-align: center; background: var(--bg-2); }
-.social { display:flex; justify-content:center; gap:24px; margin-bottom: 16px; }
-.a { color: var(--text); text-decoration:none; }
-.a:hover { color: var(--accent); }
-.mail { color: var(--accent); text-decoration:none; display:inline-block; margin: 8px 0 16px; }
-.copy { color: var(--text-2); font-size: .9rem; }
