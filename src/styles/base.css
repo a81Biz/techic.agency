@@ -41,7 +41,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding-top: var(--header-height); 
+  /* padding-top: var(--header-height);  */
 }
 
 /* Contenedor genérico centrado */
@@ -98,7 +98,7 @@ a:hover {
    =========================== */
 
 .home {
-   padding: 0 0 4rem;
+   padding: 0 0 0rem;
 }
 
 /* Bloque contenedor de todas las secciones de home */
