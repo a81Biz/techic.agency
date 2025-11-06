@@ -5,11 +5,6 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   let binary = "";
 
-  // Opcional: si quieres ser más prudente, limita el tamaño del archivo
-  // if (bytes.length > 5 * 1024 * 1024) { // 5 MB
-  //   throw new Error("Archivo demasiado grande");
-  // }
-
   for (let i = 0; i < bytes.length; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
@@ -34,23 +29,25 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
       request.headers.get("x-forwarded-for") ||
       "";
 
-    // 📦 Convertir archivos a Base64 sin usar spread (...)
+    // 📦 Convertir archivos a Base64 (sin instanceof File)
     const files: Array<{ filename: string; type: string; base64: string }> = [];
     const fileEntries = formData.getAll("files");
 
     for (const entry of fileEntries) {
-      if (entry instanceof File && entry.size > 0) {
-        // Si quieres, puedes limitar tamaño aquí también:
-        // if (entry.size > 5 * 1024 * 1024) throw new Error("Archivo demasiado grande");
+      // En el runtime de Cloudflare, basta con verificar que el objeto tenga arrayBuffer()
+      if (entry && typeof (entry as any).arrayBuffer === "function") {
+        const file = entry as unknown as File;
 
-        const arrayBuffer = await entry.arrayBuffer();
-        const base64 = arrayBufferToBase64(arrayBuffer);
+        if (file.size > 0) {
+          const arrayBuffer = await file.arrayBuffer();
+          const base64 = arrayBufferToBase64(arrayBuffer);
 
-        files.push({
-          filename: entry.name,
-          type: entry.type || "application/octet-stream",
-          base64,
-        });
+          files.push({
+            filename: file.name,
+            type: file.type || "application/octet-stream",
+            base64,
+          });
+        }
       }
     }
 
@@ -79,7 +76,11 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
     }
 
     return new Response(
-      JSON.stringify({ ok: true, message: "Correo con adjuntos enviado" }),
+      JSON.stringify({
+        ok: true,
+        message: "Correo con adjuntos enviado",
+        filesCount: files.length,
+      }),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
