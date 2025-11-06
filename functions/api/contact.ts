@@ -41,7 +41,9 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
     }
 
     return new Response(
-      JSON.stringify({ ok: true, message: "Correo enviado" }),
+      JSON.stringify({ ok: true, message: "Correo enviado" ,
+          EMAIL_WEBHOOK_URL: env.EMAIL_WEBHOOK_URL || null,
+          EMAIL_WEBHOOK_TOKEN: env.EMAIL_WEBHOOK_TOKEN ? "***definido***" : null}),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
