@@ -1,4 +1,22 @@
 // functions/api/contact.ts
+
+// Helper seguro para convertir ArrayBuffer -> Base64 sin reventar el stack
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+
+  // Opcional: si quieres ser más prudente, limita el tamaño del archivo
+  // if (bytes.length > 5 * 1024 * 1024) { // 5 MB
+  //   throw new Error("Archivo demasiado grande");
+  // }
+
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+
+  return btoa(binary);
+}
+
 export const onRequestPost: PagesFunction = async ({ request, env }) => {
   try {
     const formData = await request.formData();
@@ -16,19 +34,26 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
       request.headers.get("x-forwarded-for") ||
       "";
 
-    // 📦 Convertir archivos a Base64
+    // 📦 Convertir archivos a Base64 sin usar spread (...)
     const files: Array<{ filename: string; type: string; base64: string }> = [];
     const fileEntries = formData.getAll("files");
 
     for (const entry of fileEntries) {
       if (entry instanceof File && entry.size > 0) {
+        // Si quieres, puedes limitar tamaño aquí también:
+        // if (entry.size > 5 * 1024 * 1024) throw new Error("Archivo demasiado grande");
+
         const arrayBuffer = await entry.arrayBuffer();
-        const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-        files.push({ filename: entry.name, type: entry.type, base64 });
+        const base64 = arrayBufferToBase64(arrayBuffer);
+
+        files.push({
+          filename: entry.name,
+          type: entry.type || "application/octet-stream",
+          base64,
+        });
       }
     }
 
-    // 🧠 Payload completo para el webhook
     const payload = {
       name,
       email,
@@ -42,7 +67,6 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
       token: env.EMAIL_WEBHOOK_TOKEN,
     };
 
-    // 📬 Enviar a Apps Script
     const res = await fetch(env.EMAIL_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -50,16 +74,27 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
     });
 
     const out = await res.json().catch(() => ({}));
-    if (!res.ok || !out.ok) throw new Error(out.error || "Error en webhook de correo");
+    if (!res.ok || !out.ok) {
+      throw new Error(out.error || "Error en webhook de correo");
+    }
 
     return new Response(
       JSON.stringify({ ok: true, message: "Correo con adjuntos enviado" }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
+      {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   } catch (err: any) {
     return new Response(
-      JSON.stringify({ ok: false, error: err.message || "Error interno" }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      JSON.stringify({
+        ok: false,
+        error: err.message || "Error interno",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   }
 };
