@@ -1,47 +1,37 @@
-// functions/api/contact.ts
-
-/**
- * Endpoint temporal de prueba para el formulario TECHIC.
- * Permite validar el flujo POST desde Postman o desde el frontend.
- * Más adelante agregaremos verificación, Turnstile y envío de correos.
- */
-
-export const onRequestPost: PagesFunction = async (context) => {
-  const { request } = context;
-
-  let data: any = null;
-
-  // 1. Intentar leer el cuerpo de la petición como JSON
+export const onRequestPost: PagesFunction = async ({ request, env }) => {
   try {
-    data = await request.json();
-  } catch (err) {
+    const data = await request.json();
+
+    // 1. Preparar payload con token
+    const payload = {
+      ...data,
+      token: env.EMAIL_WEBHOOK_TOKEN,
+      ip:
+        request.headers.get("CF-Connecting-IP") ||
+        request.headers.get("x-forwarded-for") ||
+        "",
+    };
+
+    // 2. Llamar al Apps Script
+    const res = await fetch(env.EMAIL_WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const out = await res.json().catch(() => ({}));
+    if (!res.ok || !out.ok) {
+      throw new Error(out.error || "Error en webhook de correo");
+    }
+
+    return new Response(JSON.stringify({ ok: true, message: "Correo enviado" }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err: any) {
     return new Response(
-      JSON.stringify({
-        ok: false,
-        error: "El cuerpo debe estar en formato JSON válido",
-      }),
-      {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      }
+      JSON.stringify({ ok: false, error: err.message || "Error interno" }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
-
-  // 2. Responder con eco de los datos recibidos y metadatos básicos
-  const responseBody = {
-    ok: true,
-    message: "Contacto recibido (modo prueba)",
-    received: data,
-    meta: {
-      method: request.method,
-      url: request.url,
-      userAgent: request.headers.get("user-agent"),
-      timestamp: new Date().toISOString(),
-    },
-  };
-
-  return new Response(JSON.stringify(responseBody), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
 };
