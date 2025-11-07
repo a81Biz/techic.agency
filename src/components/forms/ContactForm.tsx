@@ -1,11 +1,58 @@
-import { useState } from 'react'
+import { useEffect, useState }from 'react'
 import styles from '../../styles/ContactForm.module.css'
 
 type Status = "idle" | "loading" | "success" | "error";
 
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (
+        container: string | HTMLElement,
+        options: { sitekey: string; theme?: string }
+      ) => string;
+      reset?: (widgetId?: string) => void;
+    };
+  }
+}
+
+
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [turnstileReady, setTurnstileReady] = useState(false);
+
+    useEffect(() => {
+    let cancelled = false;
+
+    const renderTurnstile = () => {
+      if (cancelled) return;
+
+      // si aún no cargó el script, reintentamos
+      if (!window.turnstile) {
+        setTimeout(renderTurnstile, 300);
+        return;
+      }
+
+      const container = document.getElementById("techic-turnstile");
+      if (!container) {
+        setTimeout(renderTurnstile, 300);
+        return;
+      }
+
+      window.turnstile.render(container, {
+        sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
+        theme: "dark",
+      });
+
+      setTurnstileReady(true);
+    };
+
+    renderTurnstile();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -128,15 +175,11 @@ export function ContactForm() {
       </div>
 
       {/* Turnstile: genera cf-turnstile-response dentro del form */}
-      <div
-        className='cf-turnstile'
-        data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-        data-theme="dark"
-      ></div>
+      <div id="techic-turnstile" />
 
       <button
         type="submit"
-        disabled={status === 'loading'}
+        disabled={status === "loading" || !turnstileReady}
         className={styles.submit}
       >
         {status === 'loading' ? 'Enviando…' : 'Enviar mensaje'}
