@@ -129,7 +129,7 @@ export function ContactForm() {
 
       {/* Turnstile: genera cf-turnstile-response dentro del form */}
       <div
-        className={`cf-turnstile ${styles.turnstile}`}
+        className='cf-turnstile'
         data-sitekey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
         data-theme="dark"
       ></div>
