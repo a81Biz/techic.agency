@@ -1,22 +1,81 @@
 // functions/api/contact.ts
 
-// Helper seguro para convertir ArrayBuffer -> Base64 sin reventar el stack
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   let binary = "";
-
   for (let i = 0; i < bytes.length; i++) {
     binary += String.fromCharCode(bytes[i]);
   }
-
   return btoa(binary);
 }
 
 export const onRequestPost: PagesFunction = async ({ request, env }) => {
   try {
+    const origin = request.headers.get("Origin") || "";
+    const referer = request.headers.get("Referer") || "";
+    const allowedOrigin = env.ALLOWED_ORIGIN || "";
+
+    // 1) Validar origen (barrera básica)
+    if (
+      allowedOrigin &&
+      !origin.startsWith(allowedOrigin) &&
+      !referer.startsWith(allowedOrigin)
+    ) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "Origen no permitido" }),
+        { status: 403, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     const formData = await request.formData();
 
-    // 📌 Extraer campos comunes
+    // 2) Honeypot: si 'website' viene con algo, asumimos bot y fingimos éxito
+    const website = formData.get("website")?.toString().trim() || "";
+    if (website !== "") {
+      return new Response(
+        JSON.stringify({ ok: true, message: "Recibido" }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // 3) Validar Turnstile
+    const turnstileToken =
+      formData.get("cf-turnstile-response")?.toString().trim() || "";
+
+    if (!turnstileToken) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "Falta verificación humana" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    const ip =
+      request.headers.get("CF-Connecting-IP") ||
+      request.headers.get("x-forwarded-for") ||
+      "";
+
+    const verifyRes = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          secret: env.TURNSTILE_SECRET_KEY,
+          response: turnstileToken,
+          remoteip: ip,
+        }),
+      }
+    );
+
+    const verifyData = await verifyRes.json<any>();
+    if (!verifyData.success) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "Verificación Turnstile fallida" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // 4) Extraer campos del formulario (igual que antes)
     const name = formData.get("name")?.toString() || "";
     const email = formData.get("email")?.toString() || "";
     const projectType = formData.get("projectType")?.toString() || "";
@@ -24,20 +83,14 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
     const message = formData.get("message")?.toString() || "";
     const refCode = formData.get("refCode")?.toString() || "";
     const pageUrl = formData.get("pageUrl")?.toString() || "";
-    const ip =
-      request.headers.get("CF-Connecting-IP") ||
-      request.headers.get("x-forwarded-for") ||
-      "";
 
-    // 📦 Convertir archivos a Base64 (sin instanceof File)
+    // 5) Archivos → Base64
     const files: Array<{ filename: string; type: string; base64: string }> = [];
     const fileEntries = formData.getAll("files");
 
     for (const entry of fileEntries) {
-      // En el runtime de Cloudflare, basta con verificar que el objeto tenga arrayBuffer()
       if (entry && typeof (entry as any).arrayBuffer === "function") {
         const file = entry as unknown as File;
-
         if (file.size > 0) {
           const arrayBuffer = await file.arrayBuffer();
           const base64 = arrayBufferToBase64(arrayBuffer);
@@ -64,6 +117,7 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
       token: env.EMAIL_WEBHOOK_TOKEN,
     };
 
+    // 6) Enviar al webhook (Apps Script)
     const res = await fetch(env.EMAIL_WEBHOOK_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
