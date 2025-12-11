@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className={s.wrap}>
       {/* Redes sociales */}
       <div className={s.social} role="list" aria-label="Redes sociales">
-        <a
+        <a role="listitem"
           className={s.iconLink}
           href="https://www.instagram.com/techic.agency/"
           aria-label="Instagram"
@@ -16,7 +16,7 @@ export default function Footer() {
         >
           <Instagram className={s.icon} />
         </a>
-        <a
+        <a role="listitem"
           className={s.iconLink}
           href="https://www.tiktok.com/@techic.agency"
           aria-label="TikTok"
@@ -25,7 +25,7 @@ export default function Footer() {
         >
           <Music2 className={s.icon} />
         </a>
-        <a
+        <a role="listitem"
           className={s.iconLink}
           href="https://www.youtube.com/@Techic.Agency"
           aria-label="YouTube"
@@ -34,7 +34,7 @@ export default function Footer() {
         >
           <Youtube className={s.icon} />
         </a>
-        <a
+        <a role="listitem"
           className={s.iconLink}
           href="https://www.linkedin.com/company/techic-agency/"
           aria-label="LinkedIn"
