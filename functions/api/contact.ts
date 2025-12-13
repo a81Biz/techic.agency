@@ -1,5 +1,3 @@
-// functions/api/contact.ts
-
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   let binary = "";
@@ -84,6 +82,17 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
     const refCode = formData.get("refCode")?.toString() || "";
     const pageUrl = formData.get("pageUrl")?.toString() || "";
 
+    // Campos extra (opcionales) para otros formularios (premium)
+    const formKind = formData.get("formKind")?.toString() || ""; // opcional
+    const whatsapp = formData.get("whatsapp")?.toString() || "";
+    const availability = formData.get("availability")?.toString() || "";
+    const workModel = formData.get("workModel")?.toString() || "";
+    const goalMonthly = formData.get("goalMonthly")?.toString() || "";
+    const goalCurrency = formData.get("goalCurrency")?.toString() || "";
+    const limits = formData.get("limits")?.toString() || "";
+    const contentType = formData.get("contentType")?.toString() || "";
+    const visualStyle = formData.get("visualStyle")?.toString() || "";
+
     // 5) Archivos → Base64
     const files: Array<{ filename: string; type: string; base64: string }> = [];
     const fileEntries = formData.getAll("files");
@@ -104,18 +113,33 @@ export const onRequestPost: PagesFunction = async ({ request, env }) => {
       }
     }
 
-    const payload = {
-      name,
-      email,
-      projectType,
-      budget,
-      message,
-      refCode,
-      pageUrl,
-      ip,
-      files,
-      token: env.EMAIL_WEBHOOK_TOKEN,
-    };
+  const safe = (v?: string | number) =>
+  v === undefined || v === null ? '' : String(v);
+
+  const payload = {
+    name: safe(name),
+    email: safe(email),
+    projectType: safe(projectType),
+    budget: safe(budget),
+    message: safe(message),
+    refCode: safe(refCode),
+    pageUrl: safe(pageUrl),
+    ip: safe(ip),
+    files,
+
+    formKind: safe(formKind),
+    whatsapp: safe(whatsapp),
+    availability: safe(availability),
+    workModel: safe(workModel),
+    goalMonthly: safe(goalMonthly),
+    goalCurrency: safe(goalCurrency),
+    limits: safe(limits),
+    contentType: safe(contentType),
+    visualStyle: safe(visualStyle),
+
+    token: env.EMAIL_WEBHOOK_TOKEN,
+  };
+
 
     // 6) Enviar al webhook (Apps Script)
     const res = await fetch(env.EMAIL_WEBHOOK_URL, {
