@@ -47,8 +47,20 @@ export default function PremiumModelForm() {
   const [goalMonthly, setGoalMonthly] = useState<string>('')
   const [goalCurrency, setGoalCurrency] = useState<'MXN' | 'USD'>('MXN')
   const [visualStyle, setVisualStyle] = useState<string[]>([])
+  const topRef = useRef<HTMLDivElement | null>(null)
 
-  // WhatsApp / Tel (se captura en Paso 4)
+
+  const scrollFormToTop = () => {
+  if (topRef.current) {
+      topRef.current.scrollIntoView({
+        behavior: 'auto',
+        block: 'start',
+      })
+    }
+  }
+
+
+  // WhatsApp / Tel (se captura en Paso 4) 
   const [whatsapp, setWhatsapp] = useState<string>('')
 
   // Fotos subidas (mínimo 3, máximo 5)
@@ -62,6 +74,7 @@ export default function PremiumModelForm() {
   // === TURNSTILE ===
   useEffect(() => {
     let cancelled = false
+    scrollFormToTop()
 
     const renderTurnstile = () => {
       if (cancelled) return
@@ -105,11 +118,6 @@ export default function PremiumModelForm() {
     )
   }
 
-  /**
-   * OJO: el resumen se arma al entrar al paso 4.
-   * Aquí NO metemos whatsapp porque aún no lo ha capturado (se captura en el paso 4).
-   * Así evitamos que en el resumen aparezca "WhatsApp: No especificado".
-   */
   const getProfileDataForSummary = (): PremiumProfileData => ({
     contentTypes,
     limits,
@@ -119,7 +127,7 @@ export default function PremiumModelForm() {
     goalMonthly,
     goalCurrency,
     visualStyle,
-    whatsapp: '', // <- importante: no lo incluimos en el resumen del paso 4
+    whatsapp: '', 
   })
 
   const buildSummaryFromState = () => {
@@ -130,6 +138,7 @@ export default function PremiumModelForm() {
 
   // Recalcular resumen al entrar al paso 4
   useEffect(() => {
+    if (status !== 'idle') { scrollFormToTop() }
     if (step === 4) buildSummaryFromState()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step])
@@ -258,6 +267,7 @@ export default function PremiumModelForm() {
   // === RENDER ===
   return (
     <form ref={formRef} className={styles.form} onSubmit={handleSubmit}>
+    <div ref={topRef} />
       {/* Overlay de estado: cuando envía / éxito / error, esto es lo único que se ve */}
       {status !== 'idle' && (
         <div className={styles.modalStateOverlay} role="status" aria-live="polite">
