@@ -47,20 +47,8 @@ export default function PremiumModelForm() {
   const [goalMonthly, setGoalMonthly] = useState<string>('')
   const [goalCurrency, setGoalCurrency] = useState<'MXN' | 'USD'>('MXN')
   const [visualStyle, setVisualStyle] = useState<string[]>([])
-  const topRef = useRef<HTMLDivElement | null>(null)
 
-
-  const scrollFormToTop = () => {
-  if (topRef.current) {
-      topRef.current.scrollIntoView({
-        behavior: 'auto',
-        block: 'start',
-      })
-    }
-  }
-
-
-  // WhatsApp / Tel (se captura en Paso 4) 
+  // WhatsApp / Tel (se captura en Paso 4)
   const [whatsapp, setWhatsapp] = useState<string>('')
 
   // Fotos subidas (mínimo 3, máximo 5)
@@ -70,11 +58,31 @@ export default function PremiumModelForm() {
   const [summary, setSummary] = useState<string>('')
 
   const formRef = useRef<HTMLFormElement | null>(null)
+  const topRef = useRef<HTMLDivElement | null>(null)
+
+  /**
+   * Scroll robusto para móvil:
+   * - quita foco (evita que el navegador te “pegue” a un input de abajo)
+   * - sube al ancla del inicio del form
+   * - se ejecuta también post-render
+   */
+  const scrollFormToTop = () => {
+    const active = document.activeElement as HTMLElement | null
+    if (active && typeof active.blur === 'function') active.blur()
+
+    if (topRef.current) {
+      topRef.current.scrollIntoView({
+        behavior: 'auto',
+        block: 'start',
+      })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'auto' })
+    }
+  }
 
   // === TURNSTILE ===
   useEffect(() => {
     let cancelled = false
-    scrollFormToTop()
 
     const renderTurnstile = () => {
       if (cancelled) return
@@ -127,7 +135,7 @@ export default function PremiumModelForm() {
     goalMonthly,
     goalCurrency,
     visualStyle,
-    whatsapp: '', 
+    whatsapp: '', // <- NO incluir whatsapp en el resumen del paso 4
   })
 
   const buildSummaryFromState = () => {
@@ -138,10 +146,27 @@ export default function PremiumModelForm() {
 
   // Recalcular resumen al entrar al paso 4
   useEffect(() => {
-    if (status !== 'idle') { scrollFormToTop() }
     if (step === 4) buildSummaryFromState()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step])
+
+  // ✅ SCROLL: al cambiar de paso, siempre arriba (post-render también)
+  useEffect(() => {
+    scrollFormToTop()
+    requestAnimationFrame(() => scrollFormToTop())
+    setTimeout(() => scrollFormToTop(), 60)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step])
+
+  // ✅ SCROLL: al entrar a loading/success/error, siempre arriba
+  useEffect(() => {
+    if (status !== 'idle') {
+      scrollFormToTop()
+      requestAnimationFrame(() => scrollFormToTop())
+      setTimeout(() => scrollFormToTop(), 60)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status])
 
   // === MANEJO DE FOTOS ===
   const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,12 +185,14 @@ export default function PremiumModelForm() {
   const goNext = () => {
     setErrorMessage(null)
     setStatus('idle')
+    ;(document.activeElement as HTMLElement | null)?.blur?.()
     setStep((prev) => Math.min(prev + 1, 4) as Step)
   }
 
   const goPrev = () => {
     setErrorMessage(null)
     setStatus('idle')
+    ;(document.activeElement as HTMLElement | null)?.blur?.()
     setStep((prev) => Math.max(prev - 1, 1) as Step)
   }
 
@@ -187,11 +214,18 @@ export default function PremiumModelForm() {
     setStatus('idle')
 
     if (window.turnstile?.reset) window.turnstile.reset()
+
+    // al resetear, sube arriba para evitar quedarse abajo en móvil
+    requestAnimationFrame(() => scrollFormToTop())
   }
 
   // === SUBMIT ===
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    // antes de poner "loading", sube arriba (así el usuario SIEMPRE ve "Enviando…")
+    scrollFormToTop()
+
     setStatus('loading')
     setErrorMessage(null)
 
@@ -235,9 +269,9 @@ export default function PremiumModelForm() {
     if (availability) formData.set('availability', availability)
     if (workModel) formData.set('workModel', workModel)
     if (goalMonthly) formData.set('goalMonthly', goalMonthly)
-    formData.set('goalCurrency', goalCurrency) // string union
+    formData.set('goalCurrency', goalCurrency)
     formData.set('limits', limits.join(', '))
-    formData.set('contentType', contentTypes.join(', ')) // más simple para email/GAS
+    formData.set('contentType', contentTypes.join(', '))
     formData.set('visualStyle', visualStyle.join(', '))
 
     // Reemplazar files
@@ -250,8 +284,6 @@ export default function PremiumModelForm() {
       const { ok, error } = readOkAndError(data)
       if (!res.ok || !ok) throw new Error(error || 'Error al enviar el formulario.')
 
-      // IMPORTANTE: ya NO reseteamos ni regresamos al paso 1 aquí.
-      // Dejamos el estado success para que el usuario vea el mensaje dentro de la misma modal.
       setStatus('success')
     } catch (err: unknown) {
       const message =
@@ -267,7 +299,9 @@ export default function PremiumModelForm() {
   // === RENDER ===
   return (
     <form ref={formRef} className={styles.form} onSubmit={handleSubmit}>
-    <div ref={topRef} />
+      {/* ANCLA: siempre al inicio del form */}
+      <div ref={topRef} />
+
       {/* Overlay de estado: cuando envía / éxito / error, esto es lo único que se ve */}
       {status !== 'idle' && (
         <div className={styles.modalStateOverlay} role="status" aria-live="polite">

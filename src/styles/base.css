@@ -804,8 +804,4 @@ a:hover {
   .content-list {
     grid-template-columns: 1fr;
   }
-
-  .app-main {
-    padding-top: 72px;
-  }
 }
