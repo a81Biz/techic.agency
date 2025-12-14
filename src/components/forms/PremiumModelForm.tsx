@@ -168,6 +168,24 @@ export default function PremiumModelForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
 
+  useEffect(() => {
+    if (status === 'idle') return
+
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = prevOverflow
+    }
+  }, [status])
+
+  useEffect(() => {
+    if (status !== 'idle') {
+      window.scrollTo({ top: 0, behavior: 'auto' })
+    }
+  }, [status])
+
+
   // === MANEJO DE FOTOS ===
   const handleFilesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files || [])
@@ -185,14 +203,14 @@ export default function PremiumModelForm() {
   const goNext = () => {
     setErrorMessage(null)
     setStatus('idle')
-    ;(document.activeElement as HTMLElement | null)?.blur?.()
+      ; (document.activeElement as HTMLElement | null)?.blur?.()
     setStep((prev) => Math.min(prev + 1, 4) as Step)
   }
 
   const goPrev = () => {
     setErrorMessage(null)
     setStatus('idle')
-    ;(document.activeElement as HTMLElement | null)?.blur?.()
+      ; (document.activeElement as HTMLElement | null)?.blur?.()
     setStep((prev) => Math.max(prev - 1, 1) as Step)
   }
 
