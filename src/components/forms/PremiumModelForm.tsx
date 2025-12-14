@@ -1,4 +1,3 @@
-// src/components/forms/PremiumModelForm.tsx
 import { useEffect, useRef, useState } from 'react'
 import styles from '../../styles/ContactForm.module.css'
 import { readOkAndError } from '../../lib/http'
@@ -11,7 +10,6 @@ import {
   validateFilesCount,
   appendFilesToFormData,
 } from '../../lib/premiumModelForm/files'
-
 import { validateNameAndEmail } from '../../lib/premiumModelForm/validation'
 
 import { PremiumStep1 } from './PremiumStep1'
@@ -50,7 +48,7 @@ export default function PremiumModelForm() {
   const [goalCurrency, setGoalCurrency] = useState<'MXN' | 'USD'>('MXN')
   const [visualStyle, setVisualStyle] = useState<string[]>([])
 
-  // WhatsApp / Tel
+  // WhatsApp / Tel (se captura en Paso 4)
   const [whatsapp, setWhatsapp] = useState<string>('')
 
   // Fotos subidas (mínimo 3, máximo 5)
@@ -107,7 +105,12 @@ export default function PremiumModelForm() {
     )
   }
 
-  const getProfileData = (): PremiumProfileData => ({
+  /**
+   * OJO: el resumen se arma al entrar al paso 4.
+   * Aquí NO metemos whatsapp porque aún no lo ha capturado (se captura en el paso 4).
+   * Así evitamos que en el resumen aparezca "WhatsApp: No especificado".
+   */
+  const getProfileDataForSummary = (): PremiumProfileData => ({
     contentTypes,
     limits,
     limitsOther,
@@ -116,20 +119,19 @@ export default function PremiumModelForm() {
     goalMonthly,
     goalCurrency,
     visualStyle,
-    whatsapp,
+    whatsapp: '', // <- importante: no lo incluimos en el resumen del paso 4
   })
 
   const buildSummaryFromState = () => {
-    const data = getProfileData()
+    const data = getProfileDataForSummary()
     const resumen = buildPremiumSummary(data)
     setSummary(resumen)
   }
 
   // Recalcular resumen al entrar al paso 4
   useEffect(() => {
-    if (step === 4) {
-      buildSummaryFromState()
-    }
+    if (step === 4) buildSummaryFromState()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step])
 
   // === MANEJO DE FOTOS ===
@@ -156,6 +158,26 @@ export default function PremiumModelForm() {
     setErrorMessage(null)
     setStatus('idle')
     setStep((prev) => Math.max(prev - 1, 1) as Step)
+  }
+
+  const resetAll = () => {
+    formRef.current?.reset()
+    setStep(1)
+    setFiles([])
+    setSummary('')
+    setWhatsapp('')
+    setContentTypes([])
+    setLimits([])
+    setLimitsOther('')
+    setAvailability('')
+    setWorkModel('')
+    setGoalMonthly('')
+    setGoalCurrency('MXN')
+    setVisualStyle([])
+    setErrorMessage(null)
+    setStatus('idle')
+
+    if (window.turnstile?.reset) window.turnstile.reset()
   }
 
   // === SUBMIT ===
@@ -193,22 +215,21 @@ export default function PremiumModelForm() {
       return
     }
 
-    // Datos adicionales
-    if (whatsapp.trim()) formData.set('whatsapp', whatsapp.trim())
-
+    // Datos base
     formData.set('projectType', 'Modelo premium')
     formData.set('pageUrl', window.location.href)
     formData.set('message', summary)
-    formData.set("formKind", "premium_model");
-    formData.set("whatsapp", whatsapp);
-    formData.set("availability", availability);
-    formData.set("workModel", workModel);
-    formData.set("goalMonthly", goalMonthly);
-    formData.set("goalCurrency", goalCurrency);
-    formData.set("limits", limits.join(", "));
-    formData.set("contentType", JSON.stringify(contentTypes));
-    formData.set("visualStyle", visualStyle.join(", "));
+    formData.set('formKind', 'premium_model')
 
+    // Campos premium (opcionales pero útiles)
+    if (whatsapp.trim()) formData.set('whatsapp', whatsapp.trim())
+    if (availability) formData.set('availability', availability)
+    if (workModel) formData.set('workModel', workModel)
+    if (goalMonthly) formData.set('goalMonthly', goalMonthly)
+    formData.set('goalCurrency', goalCurrency) // string union
+    formData.set('limits', limits.join(', '))
+    formData.set('contentType', contentTypes.join(', ')) // más simple para email/GAS
+    formData.set('visualStyle', visualStyle.join(', '))
 
     // Reemplazar files
     appendFilesToFormData(formData, files)
@@ -220,22 +241,9 @@ export default function PremiumModelForm() {
       const { ok, error } = readOkAndError(data)
       if (!res.ok || !ok) throw new Error(error || 'Error al enviar el formulario.')
 
+      // IMPORTANTE: ya NO reseteamos ni regresamos al paso 1 aquí.
+      // Dejamos el estado success para que el usuario vea el mensaje dentro de la misma modal.
       setStatus('success')
-      form.reset()
-      setStep(1)
-      setFiles([])
-      setSummary('')
-      setWhatsapp('')
-      setContentTypes([])
-      setLimits([])
-      setLimitsOther('')
-      setAvailability('')
-      setWorkModel('')
-      setGoalMonthly('')
-      setGoalCurrency('MXN')
-      setVisualStyle([])
-
-      if (window.turnstile?.reset) window.turnstile.reset()
     } catch (err: unknown) {
       const message =
         err instanceof Error
@@ -250,6 +258,63 @@ export default function PremiumModelForm() {
   // === RENDER ===
   return (
     <form ref={formRef} className={styles.form} onSubmit={handleSubmit}>
+      {/* Overlay de estado: cuando envía / éxito / error, esto es lo único que se ve */}
+      {status !== 'idle' && (
+        <div className={styles.modalStateOverlay} role="status" aria-live="polite">
+          <div className={styles.modalStateCard}>
+            {status === 'loading' && (
+              <>
+                <h2 className={styles.modalStateTitle}>Enviando…</h2>
+                <p className={styles.modalStateText}>
+                  Estamos enviando tu información. No cierres esta ventana.
+                </p>
+              </>
+            )}
+
+            {status === 'success' && (
+              <>
+                <h2 className={styles.modalStateTitle}>¡Listo!</h2>
+                <p className={styles.modalStateText}>
+                  Gracias 💛 Recibimos tu info. Te contactaremos pronto.
+                </p>
+                <button
+                  type="button"
+                  className={styles.modalStatePrimaryBtn}
+                  onClick={resetAll}
+                >
+                  Cerrar
+                </button>
+              </>
+            )}
+
+            {status === 'error' && (
+              <>
+                <h2 className={styles.modalStateTitle}>Ocurrió un error</h2>
+                <p className={styles.modalStateText}>
+                  {errorMessage || 'Ocurrió un error.'}
+                </p>
+                <div className={styles.actionsRow}>
+                  <button
+                    type="button"
+                    className={styles.secondary}
+                    onClick={() => setStatus('idle')}
+                  >
+                    Volver
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.next}
+                    onClick={resetAll}
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Honeypot */}
       <div className={styles.honeypot}>
         <label>
@@ -345,22 +410,10 @@ export default function PremiumModelForm() {
             className={styles.submit}
             disabled={status === 'loading'}
           >
-            {status === 'loading' ? 'Enviando…' : 'Enviar formulario'}
+            Enviar formulario
           </button>
         )}
       </div>
-
-      {status === 'success' && (
-        <p className={`${styles.status} ${styles.statusOk}`}>
-          Gracias 💛 Recibimos tu info. Te escribo pronto con tu plan.
-        </p>
-      )}
-
-      {status === 'error' && (
-        <p className={`${styles.status} ${styles.statusError}`}>
-          {errorMessage || 'Ocurrió un error.'}
-        </p>
-      )}
     </form>
   )
 }

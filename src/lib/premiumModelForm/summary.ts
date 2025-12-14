@@ -48,12 +48,6 @@ export function buildPremiumSummary(data: PremiumProfileData): string {
 
   const visualStyleText = listOrDefault(data.visualStyle)
 
-  const instagramText = data.instagramClean
-    ? `@${data.instagramClean}`
-    : 'No especificado'
-
-  const whatsappText =
-    data.whatsapp.trim() !== '' ? data.whatsapp.trim() : 'No especificado'
 
   return [
     'PLAN INICIAL – MODELO PREMIUM',
@@ -64,8 +58,6 @@ export function buildPremiumSummary(data: PremiumProfileData): string {
     `• Modelo de trabajo elegido: ${workModelText}`,
     `• Objetivo mensual: ${goalMonthlyText} ${goalCurrencyText}`,
     `• Estilo visual preferido: ${visualStyleText}`,
-    `• Instagram: ${instagramText}`,
-    `• WhatsApp: ${whatsappText}`,
     '',
     'Con esto propongo:',
     '- Diseñar un plan de contenido alineado a tu objetivo mensual,',
