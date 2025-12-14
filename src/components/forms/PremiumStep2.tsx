@@ -52,12 +52,13 @@ export function PremiumStep2(props: PremiumStep2Props) {
         <label className={styles.optionCard}>
           <input
             type="radio"
+            name="workModel"
             value="Tú creas tu contenido y en Techic te ayudamos a crecer."
-            checked={workModel === 'Tú creas tu contenido y te ayudamos a crecer.'}
+            checked={workModel === "Tú creas tu contenido y en Techic te ayudamos a crecer."}
             onChange={(e) => onChangeWorkModel(e.target.value)}
           />
           <div>
-            <strong>Tú creas tu contenido y yo te ayudo a crecer.</strong>
+            <strong>Tú creas tu contenido y en Techic te ayudamos a crecer.</strong>
             <p className={styles.help}>Te apoyo con edición y estrategia.</p>
           </div>
         </label>
@@ -65,15 +66,17 @@ export function PremiumStep2(props: PremiumStep2Props) {
         <label className={styles.optionCard}>
           <input
             type="radio"
+            name="workModel"
             value="En Techic te llevamos de la mano desde cero."
-            checked={workModel === 'Te llevamos de la mano desde cero.'}
+            checked={workModel === "En Techic te llevamos de la mano desde cero."}
             onChange={(e) => onChangeWorkModel(e.target.value)}
           />
           <div>
-            <strong>Yo te llevo de la mano desde cero.</strong>
+            <strong>En Techic te llevamos de la mano desde cero.</strong>
             <p className={styles.help}>Hago todo tu plan completo.</p>
           </div>
         </label>
+
       </div>
 
       <div className={styles.field}>
