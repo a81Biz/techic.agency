@@ -177,6 +177,66 @@
   font-size: 0.9rem;
 }
 
+.optionRowMain{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.samplesBtn{
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: rgba(255,255,255,0.04);
+  color: #e5e7eb;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.2s ease, border 0.2s ease;
+}
+
+.samplesBtn:hover{
+  background: rgba(167, 139, 250, 0.12);
+  border-color: rgba(167, 139, 250, 0.6);
+  transform: translateY(-1px);
+}
+
+.samplesHero{
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.samplesThumbs{
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.samplesThumb,
+.samplesThumbActive{
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: transparent;
+  border-radius: 12px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.samplesThumbActive{
+  border: 2px solid #a78bfa;
+}
+
+.samplesThumb img,
+.samplesThumbActive img{
+  width: 96px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
 .optionRow input[type="checkbox"],
 .optionRow input[type="radio"] {
   accent-color: #7c3aed; /* morado TECHIC */

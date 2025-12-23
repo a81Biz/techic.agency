@@ -1,4 +1,7 @@
 import styles from '../../styles/ContactForm.module.css'
+import { useMemo, useState } from 'react'
+import { PREMIUM_SAMPLES } from '../../lib/premiumModelForm/samplesCatalog'
+import { SamplesModal } from './SamplesModal'
 
 interface PremiumStep1Props {
   contentTypes: string[]
@@ -37,6 +40,12 @@ export function PremiumStep1(props: PremiumStep1Props) {
     onChangeLimitsOther,
   } = props
 
+  const [samplesKey, setSamplesKey] = useState<string | null>(null)
+  const samplesEntry = useMemo(
+    () => (samplesKey ? PREMIUM_SAMPLES[samplesKey] ?? null : null),
+    [samplesKey]
+  )
+
   return (
     <>
       <div className={styles.field}>
@@ -45,13 +54,30 @@ export function PremiumStep1(props: PremiumStep1Props) {
 
         {CONTENT_TYPE_OPTIONS.map((opt) => (
           <label key={opt} className={styles.optionRow}>
-            <input
-              type="checkbox"
-              value={opt}
-              checked={contentTypes.includes(opt)}
-              onChange={() => onToggleContentType(opt)}
-            />
-            <span>{opt}</span>
+            <span className={styles.optionRowMain}>
+              <input
+                type="checkbox"
+                value={opt}
+                checked={contentTypes.includes(opt)}
+                onChange={() => onToggleContentType(opt)}
+              />
+              <span>{opt}</span>
+            </span>
+
+            {PREMIUM_SAMPLES[opt] ? (
+              <button
+                type="button"
+                className={styles.samplesBtn}
+                onClick={(e) => {
+                  // Evita togglear el checkbox por el click dentro del <label>
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setSamplesKey(opt)
+                }}
+              >
+                ?
+              </button>
+            ) : null}
           </label>
         ))}
       </div>
@@ -61,6 +87,7 @@ export function PremiumStep1(props: PremiumStep1Props) {
 
         {LIMIT_OPTIONS.map((opt) => (
           <label key={opt} className={styles.optionRow}>
+            <span className={styles.optionRowMain}>
             <input
               type="checkbox"
               value={opt}
@@ -68,6 +95,23 @@ export function PremiumStep1(props: PremiumStep1Props) {
               onChange={() => onToggleLimit(opt)}
             />
             <span>{opt}</span>
+            </span>
+
+             {PREMIUM_SAMPLES[opt] ? (
+              <button
+                type="button"
+                className={styles.samplesBtn}
+                onClick={(e) => {
+                  // Evita togglear el checkbox por el click dentro del <label>
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setSamplesKey(opt)
+                }}
+              >
+                ?
+              </button>
+            ) : null}
+            
           </label>
         ))}
 
@@ -82,6 +126,12 @@ export function PremiumStep1(props: PremiumStep1Props) {
           />
         </label>
       </div>
+
+      <SamplesModal
+        open={!!samplesKey}
+        onClose={() => setSamplesKey(null)}
+        entry={samplesEntry}
+      />
     </>
   )
 }
