@@ -432,8 +432,16 @@ a:hover {
     rgba(155, 89, 182, 0.35),
     transparent 55%
   );
-  aspect-ratio: 16 / 9;
+  /* aspect-ratio: 16 / 9; */
 }
+
+/* media en las cards de Contenido*/
+.content-card-media-content { 
+    width: 100%; 
+    height: auto; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+  }
 
 .content-card-media img {
   width: 100%;

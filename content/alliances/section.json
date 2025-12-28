@@ -1,0 +1,13 @@
+{
+  "id": "alliances",
+  "type": "collection",
+  "basePath": "/alliances",
+  "listTitle": "Aliados",
+  "pageTitle": "Aliados Profesionales — TECHIC",
+  "pageSubtitle": "Especialistas y proveedores verificados que ofrecen beneficios a la comunidad TECHIC.",
+  "itemLabel": "Aliado",
+  "enabled": true,
+  "showOnHome": false,
+  "homeLimit": 0,
+  "place": 0
+}
