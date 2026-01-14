@@ -103,6 +103,16 @@ export const PREMIUM_SAMPLES: Record<string, SamplesEntry> = {
       { src: '/samples/premium/artistico/5.webp', alt: 'Artístico ejemplo' },
     ],
   },
+  Cosplay: {
+    title: 'Cosplay',
+    description: 'Representación de personajes de videojuegos, películas, series, etc.',
+    images: [
+      { src: '/samples/premium/cosplay/1.webp', alt: 'Cosplay ejemplo' },
+      { src: '/samples/premium/cosplay/2.webp', alt: 'Cosplay ejemplo' },
+      { src: '/samples/premium/cosplay/3.webp', alt: 'Cosplay ejemplo' },
+      { src: '/samples/premium/cosplay/4.webp', alt: 'Cosplay ejemplo' },
+    ],
+  },
   Mezcla: {
     title: 'Mezcla',
     description: 'Combinación de estilos (ejemplos de “mix”).',

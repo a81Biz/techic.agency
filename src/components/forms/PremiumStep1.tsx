@@ -19,6 +19,7 @@ const CONTENT_TYPE_OPTIONS = [
   'Lencería',
   'Lifestyle natural',
   'Artístico',
+  'Cosplay',
   'Mezcla',
 ]
 
@@ -88,16 +89,16 @@ export function PremiumStep1(props: PremiumStep1Props) {
         {LIMIT_OPTIONS.map((opt) => (
           <label key={opt} className={styles.optionRow}>
             <span className={styles.optionRowMain}>
-            <input
-              type="checkbox"
-              value={opt}
-              checked={limits.includes(opt)}
-              onChange={() => onToggleLimit(opt)}
-            />
-            <span>{opt}</span>
+              <input
+                type="checkbox"
+                value={opt}
+                checked={limits.includes(opt)}
+                onChange={() => onToggleLimit(opt)}
+              />
+              <span>{opt}</span>
             </span>
 
-             {PREMIUM_SAMPLES[opt] ? (
+            {PREMIUM_SAMPLES[opt] ? (
               <button
                 type="button"
                 className={styles.samplesBtn}
@@ -111,7 +112,7 @@ export function PremiumStep1(props: PremiumStep1Props) {
                 ?
               </button>
             ) : null}
-            
+
           </label>
         ))}
 
