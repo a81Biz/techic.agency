@@ -14,7 +14,7 @@ import type {
  *  - ../../content/blog/2025-11-01-algo.mdx
  *  - ../../content/projects/2025-10-28-proyecto-a.mdx
  */
-const mdxModules = import.meta.glob('../../content/*/*.mdx', {
+const mdxModules = import.meta.glob('../../content/*/*.{md,mdx}', {
   eager: true,
 }) as Record<
   string,
