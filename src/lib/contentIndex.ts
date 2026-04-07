@@ -70,7 +70,10 @@ for (const section of Object.keys(Content)) {
  */
 export function getTeasers(section: SectionKey, limit?: number): Teaser[] {
   const src = Content[section] ?? []
-  const list = typeof limit === 'number' ? src.slice(0, limit) : src
+
+  const filteredSrc = src.filter(item => item.list !== false)
+
+  const list = typeof limit === 'number' ? filteredSrc.slice(0, limit) : filteredSrc
 
   return list.map(item => ({
     section,

@@ -16,6 +16,7 @@ export interface BaseMeta extends SEOOverrides {
   excerpt?: string
   cover?: string
   tags?: string[]
+  list?: boolean
 }
 
 /**
